@@ -4,6 +4,7 @@ Vimpress
 ## DESCRIPTION
 
 The original Vimpress was created by **Adrien Friggeri** and can be downloaded at [the official vim page](http://www.vim.org/scripts/script.php?script_id=1953)
+
 This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 
 
@@ -24,6 +25,13 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 ## INSTALLATION
 
 Just copy all folders to your .vim folder
+
+## SETTINGS
+
+Edit the custom/configs.vim file to your real settigs.
+This is a comma separated line, with this informations:
+login, password, URL for your xmlrpc.php file
+
 
 ## LICENSE
 
