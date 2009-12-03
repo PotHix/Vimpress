@@ -56,22 +56,26 @@ enable_tags = 1
 try:
    f = open(os.path.expanduser("~")+"/.vim/custom/configs.vim")
    vimpress_informations = f.readline().split(",")
+   f.close()
+except:
+   vimpress_informations = False
+   sys.stderr.write("No config file found at '~/.vim/custom/configs.vim'")
+
+if vimpress_informations and vimpress_informations[0] != "login":
    blog_username = vimpress_informations[0]
    blog_password = vimpress_informations[1]
    blog_url      = vimpress_informations[2]
-   f.close()
-except:
-   blog_username = ""
-   blog_password = ""
-   blog_url      = ""
+else:
+   blog_username = blog_password = blog_url = False
+
    
 
 #####################
 # Do not edit below #
 #####################
-
-handler = xmlrpclib.ServerProxy(blog_url).metaWeblog
-edit = 1
+if blog_url:
+   handler = xmlrpclib.ServerProxy(blog_url).metaWeblog
+   edit = 1
 
 def blog_edit_off():
   global edit
