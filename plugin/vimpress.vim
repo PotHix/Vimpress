@@ -12,8 +12,8 @@
 "
 " You should have received a copy of the GNU General Public License
 " along with this program; if not, write to the Free Software Foundation,
-" Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
-" 
+" Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+"
 " Maintainer:	Adrien Friggeri <adrien@friggeri.net>
 " URL:		http://www.friggeri.net/projets/vimblog/
 " Version:	0.9
@@ -29,193 +29,210 @@
 " ":BlogSend"
 "   Saves the article to the blog
 "
-" Configuration : 
-"   Edit the "Settings" section (starts at line 51).
+" Configuration :
+"   Edit the configs.vim file on the .vim/custom directory
 "
-"   If you wish to use UTW tags, you should install the following plugin : 
+"   If you wish to use UTW tags, you should install the following plugin :
 "   http://blog.circlesixdesign.com/download/utw-rpc-autotag/
 "   and set "enable_tags" to 1 on line 50
-"
-" Usage : 
-"   Just fill in the blanks, do not modify the highlighted parts and everything
-"   should be ok.
 
-command! -nargs=0 BlogList exec("py blog_list_posts()")
-command! -nargs=0 BlogNew exec("py blog_new_post()")
-command! -nargs=0 BlogSend exec("py blog_send_post()")
+command! -nargs=0 BlogList exec('py blog_list_posts()')
+command! -nargs=0 BlogNew exec('py blog_new_post()')
+command! -nargs=0 BlogSend exec('py blog_send_post()')
 command! -nargs=1 BlogOpen exec('py blog_open_post(<f-args>)')
+command! -nargs=1 BlogDefault exec('py blog_define_default(<f-args>)')
+
 python <<EOF
 # -*- coding: utf-8 -*-
 import urllib , urllib2 , vim , xml.dom.minidom , xmlrpclib , sys , os, string , re
 
-#####################
-#      Settings     #
-#####################
-
+# Loading settings
 enable_tags = 1
-try:
-   f = open(os.path.expanduser("~")+"/.vim/custom/configs.vim")
-   vimpress_informations = f.readline().split(",")
-   f.close()
-except:
-   vimpress_informations = False
-   sys.stderr.write("No config file found at '~/.vim/custom/configs.vim'")
-
-if vimpress_informations and vimpress_informations[0] != "login":
-   blog_username = vimpress_informations[0]
-   blog_password = vimpress_informations[1]
-   blog_url      = vimpress_informations[2]
-else:
-   blog_username = blog_password = blog_url = False
-
-   
-
-#####################
-# Do not edit below #
-#####################
-if blog_url:
-   handler = xmlrpclib.ServerProxy(blog_url).metaWeblog
-   edit = 1
 
 def blog_edit_off():
-  global edit
-  if edit:
-    edit = 0
     for i in ["i","a","s","o","I","A","S","O"]:
-      vim.command('map '+i+' <nop>')
+        vim.command('map '+i+' <nop>')
 
 def blog_edit_on():
-  global edit
-  if not edit:
-    edit = 1
     for i in ["i","a","s","o","I","A","S","O"]:
-      vim.command('unmap '+i)
+        vim.command('unmap '+i)
 
 def blog_send_post():
-  def get_line(what):
-    start = 0
+    handler, blog_username, blog_password, blog_url = blog_load_info()
+
+    def get_line(what):
+        start = 0
     while not vim.current.buffer[start].startswith('"'+what):
-      start +=1
+        start +=1
     return start
-  def get_meta(what): 
-    start = get_line(what)
-    end = start + 1
+    def get_meta(what):
+        start = get_line(what)
+        end = start + 1
     while not vim.current.buffer[end][0] == '"':
-      end +=1
+        end +=1
     return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
-      
-  strid = get_meta("StrID")
-  title = get_meta("Title")
-  cats = [i.strip() for i in get_meta("Cats").split(",")]
-  if enable_tags:
-    tags = get_meta("Tags")
-  
-  text_start = 0
-  while not vim.current.buffer[text_start] == "\"========== Content ==========":
+
+    strid = get_meta("StrID")
+    title = get_meta("Title")
+    cats = [i.strip() for i in get_meta("Cats").split(",")]
+    if enable_tags:
+        tags = get_meta("Tags")
+
+    text_start = 0
+    while not vim.current.buffer[text_start] == "\"========== Content ==========":
+        text_start +=1
     text_start +=1
-  text_start +=1
-  text = '\n'.join(vim.current.buffer[text_start:])
+    text = '\n'.join(vim.current.buffer[text_start:])
 
-  content = text
+    content = text
 
-  if enable_tags:
-    post = {
-      'title': title,
-      'description': content,
-      'categories': cats,
-      'mt_keywords': tags
-    }
-  else:
-    post = {
-      'title': title,
-      'description': content,
-      'categories': cats,
-    }
+    if enable_tags:
+        post = {
+            'title': title,
+            'description': content,
+            'categories': cats,
+            'mt_keywords': tags
+        }
+    else:
+        post = {
+            'title': title,
+            'description': content,
+            'categories': cats,
+        }
 
-  if strid == '':
-    strid = handler.newPost('', blog_username,
-      blog_password, post, 0)
+    if strid == '':
+        strid = handler.newPost('', blog_username, blog_password, post, 0)
 
-    vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
-  else:
-    handler.editPost(strid, blog_username,
-      blog_password, post, 0)
+        vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
+    else:
+        handler.editPost(strid, blog_username, blog_password, post, 0)
 
-  vim.command('set nomodified')
+    vim.command('set nomodified')
 
 
 def blog_new_post():
-  def blog_get_cats():
-    l = handler.getCategories('', blog_username, blog_password)
-    s = ""
-    for i in l:
-      s = s + (i["description"].encode("utf-8"))+", "
-    if s != "": 
-      return s[:-2]
-    else:
-      return s
-  del vim.current.buffer[:]
-  blog_edit_on()
-  vim.command("set syntax=vimpress")
-  vim.current.buffer[0] =   "\"=========== Meta ============\n"
-  vim.current.buffer.append("\"StrID : ")
-  vim.current.buffer.append("\"Title : ")
-  vim.current.buffer.append("\"Cats  : "+blog_get_cats())
-  if enable_tags:
-    vim.current.buffer.append("\"Tags  : ")
-  vim.current.buffer.append("\"========== Content ==========\n")
-  vim.current.buffer.append("\n")
-  vim.current.window.cursor = (len(vim.current.buffer), 0)
-  vim.command('set nomodified')
-  vim.command('set textwidth=0')
-
-def blog_open_post(id):
-  try:
-    post = handler.getPost(id, blog_username, blog_password)
+    handler, blog_username, blog_password, blog_url = blog_load_info()
+    def blog_get_cats():
+        l = handler.getCategories('', blog_username, blog_password)
+        s = ""
+        for i in l:
+            s = s + (i["description"].encode("utf-8"))+", "
+        if s != "":
+            return s[:-2]
+        else:
+            return s
+    del vim.current.buffer[:]
     blog_edit_on()
     vim.command("set syntax=vimpress")
-    del vim.current.buffer[:]
     vim.current.buffer[0] =   "\"=========== Meta ============\n"
-    vim.current.buffer.append("\"StrID : "+str(id))
-    vim.current.buffer.append("\"Title : "+(post["title"]).encode("utf-8"))
-    vim.current.buffer.append("\"Cats  : "+",".join(post["categories"]).encode("utf-8"))
+    vim.current.buffer.append("\"StrID : ")
+    vim.current.buffer.append("\"Title : ")
+    vim.current.buffer.append("\"Cats  : "+blog_get_cats())
     if enable_tags:
-      vim.current.buffer.append("\"Tags  : "+(post["mt_keywords"]).encode("utf-8"))
+        vim.current.buffer.append("\"Tags  : ")
     vim.current.buffer.append("\"========== Content ==========\n")
-    content = (post["description"]).encode("utf-8")
-    for line in content.split('\n'):
-      vim.current.buffer.append(line)
-    text_start = 0
-    while not vim.current.buffer[text_start] == "\"========== Content ==========":
-      text_start +=1
-    text_start +=1
-    vim.current.window.cursor = (text_start+1, 0)
+    vim.current.buffer.append("\n")
+    vim.current.window.cursor = (len(vim.current.buffer), 0)
     vim.command('set nomodified')
     vim.command('set textwidth=0')
-  except:
-    sys.stderr.write("An error has occured")
+
+def blog_open_post(id):
+    handler, blog_username, blog_password, blog_url = blog_load_info()
+    try:
+        post = handler.getPost(id, blog_username, blog_password)
+        blog_edit_on()
+        vim.command("set syntax=vimpress")
+        del vim.current.buffer[:]
+        vim.current.buffer[0] =   "\"=========== Meta ============\n"
+        vim.current.buffer.append("\"StrID : "+str(id))
+        vim.current.buffer.append("\"Title : "+(post["title"]).encode("utf-8"))
+        vim.current.buffer.append("\"Cats  : "+",".join(post["categories"]).encode("utf-8"))
+        if enable_tags:
+          vim.current.buffer.append("\"Tags  : "+(post["mt_keywords"]).encode("utf-8"))
+        vim.current.buffer.append("\"========== Content ==========\n")
+        content = (post["description"]).encode("utf-8")
+        for line in content.split('\n'):
+          vim.current.buffer.append(line)
+        text_start = 0
+        while not vim.current.buffer[text_start] == "\"========== Content ==========":
+          text_start +=1
+        text_start +=1
+        vim.current.window.cursor = (text_start+1, 0)
+        vim.command('set nomodified')
+        vim.command('set textwidth=0')
+    except:
+        sys.stderr.write("An error has occured when trying to open the blog post")
 
 def blog_list_edit():
-  try:
-    row,col = vim.current.window.cursor
-    id = vim.current.buffer[row-1].split()[0]
-    blog_open_post(int(id))
-  except:
-    pass
+    try:
+        row,col = vim.current.window.cursor
+        id = vim.current.buffer[row-1].split()[0]
+        blog_open_post(int(id))
+    except:
+        pass
 
 def blog_list_posts():
-  try:
-    lessthan = handler.getRecentPosts('',blog_username, blog_password,1)[0]["postid"]
-    size = len(lessthan)
-    allposts = handler.getRecentPosts('',blog_username, blog_password,int(lessthan))
-    del vim.current.buffer[:]
-    vim.command("set syntax=vimpress")
-    vim.current.buffer[0] = "\"====== List of Posts ========="
-    for p in allposts:
-      vim.current.buffer.append(("".zfill(size-len(p["postid"])).replace("0", " ")+p["postid"])+"\t"+(p["title"]).encode("utf-8"))
-      vim.command('set nomodified')
-    blog_edit_off()
-    vim.current.window.cursor = (2, 0)
-    vim.command('map <enter> :py blog_list_edit()<cr>')
-  except:
-    sys.stderr.write("An error has occured")
+    handler, blog_username, blog_password, blog_url = blog_load_info()
+    try:
+        lessthan = handler.getRecentPosts('',blog_username, blog_password,1)[0]["postid"]
+        size = len(lessthan)
+        allposts = handler.getRecentPosts('',blog_username, blog_password,int(lessthan))
+        del vim.current.buffer[:]
+        vim.command("set syntax=vimpress")
+        vim.current.buffer[0] = "\"====== List of Posts ========="
+        for p in allposts:
+            vim.current.buffer.append(("".zfill(size-len(p["postid"])).replace("0", " ")+p["postid"])+"\t"+(p["title"]).encode("utf-8"))
+            vim.command('set nomodified')
+        blog_edit_off()
+        vim.current.window.cursor = (2, 0)
+        vim.command('map <enter> :py blog_list_edit()<cr>')
+    except:
+        sys.stderr.write("An error has occured when trying to list posts")
+
+def blog_define_default(default_number):
+    try:
+        config_file_path = os.path.expanduser("~")+"/.vim/custom/configs.vim"
+        new_content = []
+        old_content = open(config_file_path).readlines()
+
+        for i in old_content:
+            blog_settings = i.split(",")
+            blog_settings[0] = "[ ]"
+            new_content.append(",".join(blog_settings))
+
+        s = new_content[int(default_number)].split(",")
+        s[0] = "[x]"
+        new_content[int(default_number)] = ",".join(s)
+
+        f = open(config_file_path, "w")
+        for i in new_content:
+            f.write(i)
+        f.close()
+    except:
+        sys.stderr.write("Could not setup a default blog, do it manually on your configs.vim file")
+
+#FIXME: I should find a better way to use it to not load everytime and duplicate code :(
+def blog_load_info():
+    try:
+        f = open(os.path.expanduser("~")+"/.vim/custom/configs.vim")
+        for i in f.readlines():
+            info = i.split(",")
+            if info[0] == "[x]": vimpress_informations = info
+
+        f.close()
+    except:
+        vimpress_informations = False
+        sys.stderr.write("No config file found at '~/.vim/custom/configs.vim'")
+
+    if vimpress_informations and vimpress_informations[1] != "login":
+        blog_username = vimpress_informations[1]
+        blog_password = vimpress_informations[2]
+        blog_url      = vimpress_informations[3]
+    else:
+        blog_username = blog_password = blog_url = False
+
+    if blog_url:
+        handler = xmlrpclib.ServerProxy(blog_url).metaWeblog
+
+    return [handler, blog_username, blog_password, blog_url]
+
