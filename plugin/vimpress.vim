@@ -173,21 +173,18 @@ def blog_list_edit():
 
 def blog_list_posts():
     handler, blog_username, blog_password, blog_url = blog_load_info()
-    try:
-        lessthan = handler.getRecentPosts('',blog_username, blog_password,1)[0]["postid"]
-        size = len(lessthan)
-        allposts = handler.getRecentPosts('',blog_username, blog_password,int(lessthan))
-        del vim.current.buffer[:]
-        vim.command("set syntax=vimpress")
-        vim.current.buffer[0] = "\"====== List of Posts ========="
-        for p in allposts:
-            vim.current.buffer.append(("".zfill(size-len(p["postid"])).replace("0", " ")+p["postid"])+"\t"+(p["title"]).encode("utf-8"))
-            vim.command('set nomodified')
-        blog_edit_off()
-        vim.current.window.cursor = (2, 0)
-        vim.command('map <enter> :py blog_list_edit()<cr>')
-    except:
-        sys.stderr.write("An error has occured when trying to list posts")
+    lessthan = handler.getRecentPosts('',blog_username, blog_password,1)[0]["postid"]
+    size = len(lessthan)
+    allposts = handler.getRecentPosts('',blog_username, blog_password,int(lessthan))
+    del vim.current.buffer[:]
+    vim.command("set syntax=vimpress")
+    vim.current.buffer[0] = "\"====== List of Posts ========="
+    for p in allposts:
+        vim.current.buffer.append(("".zfill(size-len(p["postid"])).replace("0", " ")+p["postid"])+"\t"+(p["title"]).encode("utf-8"))
+        vim.command('set nomodified')
+    blog_edit_off()
+    vim.current.window.cursor = (2, 0)
+    vim.command('map <enter> :py blog_list_edit()<cr>')
 
 def blog_define_default(default_number):
     try:
