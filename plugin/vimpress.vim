@@ -1,4 +1,4 @@
-" Copyright (C) 2007 Adrien Friggeri.
+" Copyright (C) 2011 PotHix <Willian Molinari>.
 "
 " This program is free software; you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -14,27 +14,13 @@
 " along with this program; if not, write to the Free Software Foundation,
 " Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 "
-" Maintainer:	Adrien Friggeri <adrien@friggeri.net>
-" URL:		http://www.friggeri.net/projets/vimblog/
-" Version:	0.9
-" Last Change:  2007 July 13
+" ProjectCreator: Adrien Friggeri <adrien@friggeri.net>
+" Maintainer:     PotHix <pothix@pothix.com>
+" URL:            https://github.com/PotHix/vimpress
+" Version:        0.10
+" Last Change:    2011 March 09
 "
-" Commands :
-" ":BlogList"
-"   Lists all articles in the blog
-" ":BlogNew"
-"   Opens page to write new article
-" ":BlogOpen <id>"
-"   Opens the article <id> for edition
-" ":BlogSend"
-"   Saves the article to the blog
-"
-" Configuration :
-"   Edit the configs.vim file on the .vim/custom directory
-"
-"   If you wish to use UTW tags, you should install the following plugin :
-"   http://blog.circlesixdesign.com/download/utw-rpc-autotag/
-"   and set "enable_tags" to 1 on line 50
+" Read the README file for more informations about the Vimpress configuration
 
 command! -nargs=0 BlogList exec('py blog_list_posts()')
 command! -nargs=0 BlogNew exec('py blog_new_post()')

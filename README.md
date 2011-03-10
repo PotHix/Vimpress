@@ -14,13 +14,14 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 * Edit a current article
 * Save (yeah, no kidding)
 * Supports categories
-* Supports tags1 
+* Supports tags1
 
 ## COMMANDS
 * **:BlogList** Lists all articles in the blog
 * **:BlogNew** Opens page to write new article
 * **:BlogOpen <id>** Opens the article <id> for edition
 * **:BlogSend** Saves the article to the blog
+* **:BlogDefault** Define the default blog using the <index> of the config file
 
 ## INSTALLATION
 
@@ -47,4 +48,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation,
-Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
