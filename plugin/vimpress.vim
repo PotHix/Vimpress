@@ -41,6 +41,7 @@ def blog_edit_off():
 
 def blog_edit_on():
     for i in ["i","a","s","o","I","A","S","O"]:
+        vim.command('map '+i+' <nop>')
         vim.command('unmap '+i)
 
 def blog_send_post():
