@@ -17,7 +17,7 @@
 " ProjectCreator: Adrien Friggeri <adrien@friggeri.net>
 " Maintainer:     PotHix <pothix@pothix.com>
 " URL:            https://github.com/PotHix/vimpress
-" Version:        0.10
+" Version:        0.11
 " Last Change:    2011 March 09
 "
 " Read the README file for more informations about the Vimpress configuration

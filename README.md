@@ -9,29 +9,36 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 
 
 ## FEATURES
+
 * Get a list of all articles
 * Write a new article
 * Edit a current article
 * Save (yeah, no kidding)
 * Supports categories
-* Supports tags1
+* Supports tags
+
 
 ## COMMANDS
+
 * **:BlogList** Lists all articles in the blog
 * **:BlogNew** Opens page to write new article
 * **:BlogOpen <id>** Opens the article <id> for edition
 * **:BlogSend** Saves the article to the blog
 * **:BlogDefault** Define the default blog using the <index> of the config file
 
+
 ## INSTALLATION
 
-Just copy all folders to your .vim folder
+I recommend using [pathogem](https://github.com/tpope/vim-pathogen) with a bundles directory, using git submodule to manage (like I'm doing in [my config files](https://github.com/PotHix/pothix-vimfiles)),
+but just copy all folders to your .vim folder will work as well.
+
 
 ## SETTINGS
 
-Edit the custom/configs.vim file to your real settigs.
+Duplicate custom/configs.vim.example file and rename it to
+custom/configs.vim file changing its content to your real settigs.
 This is a comma separated line, with this informations:
-login, password, URL for your xmlrpc.php file
+a mark for default blog, login, password, URL for your xmlrpc.php file
 
 
 ## LICENSE
@@ -49,3 +56,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
