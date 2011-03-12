@@ -49,15 +49,15 @@ def blog_send_post():
 
     def get_line(what):
         start = 0
-    while not vim.current.buffer[start].startswith('"'+what):
-        start +=1
-    return start
+        while not vim.current.buffer[start].startswith('"'+what):
+            start +=1
+        return start
     def get_meta(what):
         start = get_line(what)
         end = start + 1
-    while not vim.current.buffer[end][0] == '"':
-        end +=1
-    return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
+        while not vim.current.buffer[end][0] == '"':
+            end +=1
+        return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
 
     strid = get_meta("StrID")
     title = get_meta("Title")
@@ -88,7 +88,7 @@ def blog_send_post():
         }
 
     if strid == '':
-        strid = handler.newPost('', blog_username, blog_password, post, 0)
+        strid = handler.newPost('', blog_username, blog_password, post, 1)
 
         vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
     else:
