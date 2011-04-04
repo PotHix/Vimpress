@@ -88,7 +88,7 @@ def blog_send_post():
         }
 
     if strid == '':
-        strid = handler.newPost('', blog_username, blog_password, post, 1)
+        strid = handler.newPost('', blog_username, blog_password, post, 0)
 
         vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
     else:
