@@ -73,19 +73,14 @@ def blog_send_post():
 
     content = text
 
+    post = {
+        'title': title,
+        'description': content,
+        'categories': cats,
+    }
+
     if enable_tags:
-        post = {
-            'title': title,
-            'description': content,
-            'categories': cats,
-            'mt_keywords': tags
-        }
-    else:
-        post = {
-            'title': title,
-            'description': content,
-            'categories': cats,
-        }
+        post['mt_keywords'] = tags
 
     if strid == '':
         strid = handler.newPost('', blog_username, blog_password, post, 0)
