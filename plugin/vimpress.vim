@@ -25,6 +25,7 @@
 command! -nargs=0 BlogList exec('py blog_list_posts()')
 command! -nargs=0 BlogNew exec('py blog_new_post()')
 command! -nargs=0 BlogSend exec('py blog_send_post()')
+command! -nargs=0 BlogPublish exec('py blog_publish()')
 command! -nargs=1 BlogOpen exec('py blog_open_post(<f-args>)')
 command! -nargs=1 BlogDefault exec('py blog_define_default(<f-args>)')
 
@@ -45,52 +46,10 @@ def blog_edit_on():
         vim.command('unmap '+i)
 
 def blog_send_post():
-    handler, blog_username, blog_password, blog_url = blog_load_info()
+    blog_send(0)
 
-    def get_line(what):
-        start = 0
-        while not vim.current.buffer[start].startswith('"'+what):
-            start +=1
-        return start
-    def get_meta(what):
-        start = get_line(what)
-        end = start + 1
-        while not vim.current.buffer[end][0] == '"':
-            end +=1
-        return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
-
-    strid = get_meta("StrID")
-    title = get_meta("Title")
-    cats = [i.strip() for i in get_meta("Cats").split(",")]
-    if enable_tags:
-        tags = get_meta("Tags")
-
-    text_start = 0
-    while not vim.current.buffer[text_start] == "\"========== Content ==========":
-        text_start +=1
-    text_start +=1
-    text = '\n'.join(vim.current.buffer[text_start:])
-
-    content = text
-
-    post = {
-        'title': title,
-        'description': content,
-        'categories': cats,
-    }
-
-    if enable_tags:
-        post['mt_keywords'] = tags
-
-    if strid == '':
-        strid = handler.newPost('', blog_username, blog_password, post, 0)
-
-        vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
-    else:
-        handler.editPost(strid, blog_username, blog_password, post, 0)
-
-    vim.command('set nomodified')
-
+def blog_publish():
+    blog_send(1)
 
 def blog_new_post():
     handler, blog_username, blog_password, blog_url = blog_load_info()
@@ -189,6 +148,54 @@ def blog_define_default(default_number):
         f.close()
     except:
         sys.stderr.write("Could not setup a default blog, do it manually on your configs.vim file")
+
+def blog_send(publish=False):
+    handler, blog_username, blog_password, blog_url = blog_load_info()
+
+    def get_line(what):
+        start = 0
+        while not vim.current.buffer[start].startswith('"'+what):
+            start +=1
+        return start
+    def get_meta(what):
+        start = get_line(what)
+        end = start + 1
+        while not vim.current.buffer[end][0] == '"':
+            end +=1
+        return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
+
+    strid = get_meta("StrID")
+    title = get_meta("Title")
+    cats = [i.strip() for i in get_meta("Cats").split(",")]
+    if enable_tags:
+        tags = get_meta("Tags")
+
+    text_start = 0
+    while not vim.current.buffer[text_start] == "\"========== Content ==========":
+        text_start +=1
+    text_start +=1
+    text = '\n'.join(vim.current.buffer[text_start:])
+
+    content = text
+
+    post = {
+        'title': title,
+        'description': content,
+        'categories': cats,
+    }
+
+    if enable_tags:
+        post['mt_keywords'] = tags
+
+    if strid == '':
+        strid = handler.newPost('', blog_username, blog_password, post, 0)
+
+        vim.current.buffer[get_line("StrID")] = "\"StrID : "+strid
+    else:
+        handler.editPost(strid, blog_username, blog_password, post, publish)
+
+    vim.command('set nomodified')
+
 
 #FIXME: I should find a better way to use it to not load everytime and duplicate code :(
 def blog_load_info():
