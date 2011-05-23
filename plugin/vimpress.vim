@@ -17,8 +17,8 @@
 " ProjectCreator: Adrien Friggeri <adrien@friggeri.net>
 " Maintainer:     PotHix <pothix@pothix.com>
 " URL:            https://github.com/PotHix/vimpress
-" Version:        0.11
-" Last Change:    2011 March 09
+" Version:        0.12
+" Last Change:    2011 May 23
 "
 " Read the README file for more informations about the Vimpress configuration
 
@@ -26,6 +26,7 @@ command! -nargs=0 BlogList exec('py blog_list_posts()')
 command! -nargs=0 BlogNew exec('py blog_new_post()')
 command! -nargs=0 BlogSend exec('py blog_send_post()')
 command! -nargs=0 BlogPublish exec('py blog_publish()')
+command! -nargs=0 BlogPreviewUrl exec('py blog_preview_url()')
 command! -nargs=1 BlogOpen exec('py blog_open_post(<f-args>)')
 command! -nargs=1 BlogDefault exec('py blog_define_default(<f-args>)')
 
@@ -152,18 +153,6 @@ def blog_define_default(default_number):
 def blog_send(publish=False):
     handler, blog_username, blog_password, blog_url = blog_load_info()
 
-    def get_line(what):
-        start = 0
-        while not vim.current.buffer[start].startswith('"'+what):
-            start +=1
-        return start
-    def get_meta(what):
-        start = get_line(what)
-        end = start + 1
-        while not vim.current.buffer[end][0] == '"':
-            end +=1
-        return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
-
     strid = get_meta("StrID")
     title = get_meta("Title")
     cats = [i.strip() for i in get_meta("Cats").split(",")]
@@ -197,6 +186,24 @@ def blog_send(publish=False):
     vim.command('set nomodified')
 
 
+def blog_preview_url():
+    blog_url = re.sub("xmlrpc.*","",blog_load_info()[3])
+    sys.stdout.write(re.sub("\n", "", blog_url + "?p=" + get_meta("StrID") + "&preview=true"))
+
+def get_line(what):
+    start = 0
+    while not vim.current.buffer[start].startswith('"'+what):
+        start +=1
+    return start
+
+def get_meta(what):
+    start = get_line(what)
+    end = start + 1
+    while not vim.current.buffer[end][0] == '"':
+        end +=1
+    return " ".join(vim.current.buffer[start:end]).split(":")[1].strip()
+
+
 #FIXME: I should find a better way to use it to not load everytime and duplicate code :(
 def blog_load_info():
     try:
@@ -221,4 +228,5 @@ def blog_load_info():
         handler = xmlrpclib.ServerProxy(blog_url).metaWeblog
 
     return [handler, blog_username, blog_password, blog_url]
+
 

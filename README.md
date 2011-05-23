@@ -16,6 +16,7 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 * Save (yeah, no kidding)
 * Supports categories
 * Supports tags
+* Supports multiple blogs
 
 
 ## COMMANDS
@@ -25,6 +26,7 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 * **:BlogOpen <id>** Opens the article <id> for edition
 * **:BlogSend** Saves the article to the blog
 * **:BlogDefault** Define the default blog using the <index> of the config file
+* **:BlogPreviewUrl** Show the url of the post preview
 
 
 ## INSTALLATION
