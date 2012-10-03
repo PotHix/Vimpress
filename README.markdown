@@ -1,14 +1,16 @@
 Vimpress
 ========
 
-## DESCRIPTION
+Description
+-----------
 
 The original Vimpress was created by **Adrien Friggeri** and can be downloaded at [the official vim page](http://www.vim.org/scripts/script.php?script_id=1953)
 
 This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 
 
-## FEATURES
+Features
+--------
 
 * Get a list of all articles
 * Write a new article
@@ -19,7 +21,8 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 * Supports multiple blogs
 
 
-## COMMANDS
+Commands
+--------
 
 * **:BlogList** Lists all articles in the blog
 * **:BlogNew** Opens page to write new article
@@ -29,13 +32,15 @@ This is a **Willian Molinari (a.k.a PotHix)** fork to add some new features.
 * **:BlogPreviewUrl** Show the url of the post preview
 
 
-## INSTALLATION
+Installation
+------------
 
 I recommend using [pathogem](https://github.com/tpope/vim-pathogen) with a bundles directory, using git submodule to manage (like I'm doing in [my config files](https://github.com/PotHix/pothix-vimfiles)),
 but just copy all folders to your .vim folder will work as well.
 
 
-## SETTINGS
+Settings
+--------
 
 Duplicate custom/configs.vim.example file and rename it to
 custom/configs.vim file changing its content to your real settigs.
@@ -43,7 +48,8 @@ This is a comma separated line, with this informations:
 a mark for default blog, login, password, URL for your xmlrpc.php file
 
 
-## LICENSE
+License
+-------
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
